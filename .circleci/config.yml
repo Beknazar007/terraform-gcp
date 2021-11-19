@@ -42,8 +42,9 @@ workflows:
       - build:
           context: GOOGLE_CREDENTIALS
 
-      - hold:
-          type: approval 
+      - hold: 
+
+         type: approval 
           
       - build2:
           context: GOOGLE_CREDENTIALS
