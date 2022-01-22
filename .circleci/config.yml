@@ -3,19 +3,8 @@ orbs:
   heroku: circleci/heroku@0.0.10
   slack: circleci/slack@4.1
 jobs:
-  build:
-    docker:
-      - image: circleci/node:10.16.3
-    working_directory: ~/search-yc-top-companies
-    steps:
-      - checkout
-      # install dependencies
-      - run:
-          name: Install Dependencies
-          command: npm install
-      - run:
-          name: Build
-          command: npm run build
+ 
+ 
   status:
     docker:
       - image: cimg/base:stable
@@ -30,9 +19,8 @@ jobs:
 workflows:
   heroku_deploy:
     jobs:
-      - build
+      
  
-      - status:
-          requires:
-            - build
+      - status
+ 
              
