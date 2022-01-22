@@ -3,6 +3,12 @@ orbs:
   heroku: circleci/heroku@0.0.10
   slack: circleci/slack@4.1
 jobs:
+
+  build:
+    docker:
+      - image: circleci/ubuntu
+    steps:
+      - run: echo "Job is done"
  
  
   status:
