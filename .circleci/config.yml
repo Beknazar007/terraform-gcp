@@ -1,54 +1,43 @@
 version: 2.1
-
-jobs: 
+orbs:
+  heroku: circleci/heroku@0.0.10
+  slack: circleci/slack@4.1
+jobs:
   build:
-    docker: 
-      - image: hashicorp/terraform    
-    
-    steps: 
-      - checkout 
-      - run:
-          name: "init"
-          command: terraform init
-          
-      - run:
-          name: "plan"
-          command: terraform plan
-          
-      
-  build2:
-    docker: 
-      - image: hashicorp/terraform   
+    docker:
+      - image: circleci/node:10.16.3
+    working_directory: ~/search-yc-top-companies
     steps:
-      - checkout 
+      - checkout
+      # install dependencies
       - run:
-          name: "init"
-          command: terraform init 
-          
+          name: Install Dependencies
+          command: npm install
       - run:
-          name: "plan"
-          command: terraform plan
-          
-      - run:
-          name: "apply"
-          command: terraform apply --auto-approve 
-          
-      - run:
-          name: "destroy"
-          command: terraform destroy --auto-approve     
-workflows: 
-  build:
+          name: Build
+          command: npm run build
+  status:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - run: echo "Sending status"
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+workflows:
+  heroku_deploy:
     jobs:
-      - build:
-          context: GOOGLE_CREDENTIALS
-
-      - hold: 
-
-         type: approval 
-          
-      - build2:
-          context: GOOGLE_CREDENTIALS
-          requires: 
+      - build
+      - heroku/deploy-via-git: # Use the pre-configured job, deploy-via-git
+          requires:
             - build
-            - hold
-          
+          filters:
+            branches:
+              only: master
+      - status:
+          requires:
+            - build
+            - heroku/deploy-via-git
