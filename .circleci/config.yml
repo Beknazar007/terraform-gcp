@@ -35,4 +35,4 @@ workflows:
       - status:
           requires:
             - build
-            - heroku/deploy-via-git
+             
